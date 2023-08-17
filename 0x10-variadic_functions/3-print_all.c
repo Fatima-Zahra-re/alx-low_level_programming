@@ -1,76 +1,55 @@
-#include "variadic_functions.h"
-#include <stdarg.h>
 #include <stdio.h>
-/**
-  * p_char - prints characters
-  * @c: character to print
-  */
-void p_char(va_list c)
-{
-	printf("%c", va_arg(c, int));
-}
-/**
-  * p_int - prints integers
-  * @i: integer to print
-  */
-void p_int(va_list i)
-{
-	printf("%d", va_arg(i, int));
-}
-/**
-  * p_float - prints floats
-  * @f: float to print
-  */
-void p_float(va_list f)
-{
-	printf("%f", va_arg(f, double));
-}
-/**
-  * p_string - prints strings
-  * @s: string to print
-  */
-void p_string(va_list s)
-{
-	char *string;
+#include <stdlib.h>
+#include <stdarg.h>
+#include "variadic_functions.h"
 
-	string = va_arg(s, char *);
-	if (string == NULL)
-		string = "(nil)";
-	printf("%s", string);
-}
 /**
-  * print_all - prints any argument passed into it
-  * @format: formats symbols in order
-  */
+ * print_all - a function that prints anything.
+ * @format: list of types of arguments passed to the function
+ *
+ */
+
 void print_all(const char * const format, ...)
 {
-	unsigned int i, j;
-	char *separator;
-	va_list argp;
-	v_types valid_types[] = {
-		{"c", p_char},
-		{"i", p_int},
-		{"f", p_float},
-		{"s", p_string}
-	};
+	unsigned int counter = 0, j, i = 0;
+	char *p;
+	const char arguments[] = "cifs";
+	va_list myList;
 
-	i = j = 0;
-	separator = "";
-	va_start(argp, format);
-	while (format && format[i])
+	va_start(myList, format);
+	while (format && format[counter])
 	{
 		j = 0;
-		while (j < 4)
+		while (arguments[j])
 		{
-			if (format[i] == *valid_types[j].valid)
+			if (format[counter] == arguments[j] && i)
 			{
-				printf("%s", separator);
-				valid_types[j].f(argp);
-				separator = ", ";
-			}
-			j++;
+				printf(", ");
+				break;
+			} j++;
 		}
-		i++;
+		switch (format[counter])
+		{
+			case 'c':
+				printf("%c", va_arg(myList, int)), i = 1;
+				break;
+			case 'i':
+				printf("%d", va_arg(myList, int)), i = 1;
+				break;
+			case 'f':
+				printf("%f", va_arg(myList, double)), i = 1;
+				break;
+			case 's':
+				p = va_arg(myList, char *), i = 1;
+				if (!p)
+				{
+					printf("(nil)");
+					break;
+				}
+				printf("%s", p);
+				break;
+		} counter++;
 	}
 	printf("\n");
+	va_end(myList);
 }
